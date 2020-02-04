@@ -1,3 +1,4 @@
+const axios = require("axios");
 const User = require("../models/User");
 
 class UserController {
@@ -9,15 +10,54 @@ class UserController {
     });
   }
 
+  async show(req, res) {
+    const user = await User.findById(req.params.id);
+    const { name, email, biography, avatar, siteBlog, github } = user;
+
+    return res.json({
+      name,
+      email,
+      biography,
+      avatar,
+      siteBlog,
+      github
+    });
+  }
+
   async store(req, res) {
-    const { email } = req.body;
+    const { name, email, password } = req.body;
 
     if (await User.findOne({ email })) {
-      return res.status(400).json({ error: "Este usuário já existe!" });
+      return res.json({ error: "Este email já esta cadastrado!" });
     }
 
-    const user = await User.create(req.body);
-    return res.json(user);
+    if (await User.findOne({ name })) {
+      return res.json({ error: "Este usuário já existe!" });
+    }
+
+    try {
+      const response = await axios.get(`https://api.github.com/users/${name}`);
+
+      const {
+        avatar_url: avatar,
+        bio: biography,
+        blog: siteBlog,
+        html_url: github
+      } = response.data;
+
+      const user = await User.create({
+        name,
+        email,
+        password,
+        biography,
+        avatar,
+        siteBlog,
+        github
+      });
+      return res.json(user);
+    } catch (err) {
+      console.log(err, " ERROR");
+    }
   }
 }
 

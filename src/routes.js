@@ -19,6 +19,7 @@ router.get("/v1/groups", GroupController.index);
 router.use(AuthMiddleware);
 
 router.get("/v1/users", UserController.index);
+router.get("/v1/users/:id", UserController.show);
 
 // Books authenticated
 router.post("/v1/books", BookController.store);

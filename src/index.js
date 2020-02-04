@@ -2,6 +2,7 @@ require("dotenv/config");
 
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const routes = require("./routes");
 const databaseConfig = require("./config/database");
@@ -9,6 +10,7 @@ const databaseConfig = require("./config/database");
 const app = express();
 const port = process.env.PORT;
 
+app.use(cors());
 app.use(express.json());
 app.use(routes);
 

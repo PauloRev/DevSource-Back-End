@@ -10,33 +10,25 @@ class SessionController {
 
     const userDb = await User.findOne({ email: user.email });
 
-    const isValid = await userDb.checkPassword(user.password);
+    if (!userDb) {
+      return res.json({ error: "e-mail não existe!" });
+    }
 
-    if (isValid === true) {
-      const payload = {
-        id: userDb._id,
-        name: userDb.name,
-        email: userDb.email
-      };
+    if (!(await userDb.checkPassword(user.password))) {
+      return res.json({ error: "senha incorreta!" });
+    }
 
-      jwt.sign(payload, authConfig.secret, (err, token) => {
-        if (err) {
-          return res.json({
-            success: false,
-            error: "token inválido!"
-          });
-        } else {
-          return res.json({
-            success: true,
-            token: token
-          });
-        }
-      });
-    } else {
+    try {
+      const { id, name, email } = userDb;
+
       return res.json({
-        success: false,
-        error: "e-mail ou senha incorretos!"
+        success: true,
+        token: jwt.sign({ id, name, email }, authConfig.secret, {
+          expiresIn: authConfig.expiresIn
+        })
       });
+    } catch (err) {
+      console.log(err, " ERRO");
     }
   }
 }
