@@ -16,6 +16,9 @@ router.get("/v1/books", BookController.index);
 router.get("/v1/courses", CourseController.index);
 router.get("/v1/groups", GroupController.index);
 
+// teste
+router.delete("/v1/users/:id", UserController.destroy);
+
 router.use(AuthMiddleware);
 
 router.get("/v1/users", UserController.index);

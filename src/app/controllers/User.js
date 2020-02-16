@@ -59,6 +59,13 @@ class UserController {
       console.log(err, " ERROR");
     }
   }
+  async destroy(req, res) {
+    await User.findByIdAndDelete(req.params.id);
+
+    return res.json({
+      success: true
+    });
+  }
 }
 
 module.exports = new UserController();

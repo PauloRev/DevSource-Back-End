@@ -21,10 +21,10 @@ const UserSchema = new mongoose.Schema({
     required: true
   },
   biography: {
-    type: String,
+    type: String
   },
   siteBlog: {
-    type: String,
+    type: String
   },
   github: {
     type: String,
