@@ -25,40 +25,63 @@ class UserController {
   }
 
   async store(req, res) {
-    const { name, email, password } = req.body;
+    const { name, githubUsername, email, password } = req.body;
 
-    if (await User.findOne({ email })) {
-      return res.json({ error: "Este email já esta cadastrado!" });
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        code: 400,
+        error: "Verifique os campos obrigatórios!"
+      });
     }
 
-    if (await User.findOne({ name })) {
-      return res.json({ error: "Este usuário já existe!" });
+    if (await User.findOne({ email })) {
+      return res.status(409).json({
+        code: 409,
+        error: "Este email já esta cadastrado!"
+      });
+    }
+
+    if (await User.findOne({ githubUsername })) {
+      return res.status(409).json({
+        code: 409,
+        error: "Este usuário já existe!"
+      });
     }
 
     try {
-      const response = await axios.get(`https://api.github.com/users/${name}`);
+      const githubResponse = await axios.get(
+        `https://api.github.com/users/${githubUsername}`
+      );
 
-      const {
-        avatar_url: avatar,
-        bio: biography,
-        blog: siteBlog,
-        html_url: github
-      } = response.data;
+      const githubProperties = {
+        biography: githubResponse.data.bio || "",
+        avatar: req.body.avatar || githubResponse.data.avatar_url,
+        siteBlog: githubResponse.data.blog || "",
+        githubUrl: githubResponse.data.html_url
+      };
 
       const user = await User.create({
         name,
         email,
         password,
-        biography,
-        avatar,
-        siteBlog,
-        github
+        githubUsername,
+        ...githubProperties
       });
-      return res.json(user);
+
+      user.password = undefined;
+
+      return res.status(200).json({
+        code: 200,
+        user
+      });
     } catch (err) {
-      console.log(err, " ERROR");
+      return res.status(400).json({
+        code: 400,
+        error: err.message
+      });
     }
   }
+
   async destroy(req, res) {
     await User.findByIdAndDelete(req.params.id);
 

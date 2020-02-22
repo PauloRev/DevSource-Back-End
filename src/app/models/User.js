@@ -14,11 +14,11 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    select: false
   },
   avatar: {
-    type: String,
-    required: true
+    type: String
   },
   biography: {
     type: String
@@ -26,9 +26,12 @@ const UserSchema = new mongoose.Schema({
   siteBlog: {
     type: String
   },
-  github: {
+  githubUsername: {
     type: String,
     required: true
+  },
+  githubUrl: {
+    type: String
   },
   linkedin: String,
   createdAt: {
