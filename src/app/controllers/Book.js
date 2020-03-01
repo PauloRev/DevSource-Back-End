@@ -6,6 +6,12 @@ class BookController {
     return res.json(books);
   }
 
+  async show(req, res) {
+    const book = await Book.findById(req.params.id);
+
+    return res.status(200).json(book);
+  }
+
   async store(req, res) {
     const { id, name, email } = req.userSession;
 
@@ -14,6 +20,9 @@ class BookController {
       author: id,
       authorName: name
     });
+
+    req.io.emit("book", book);
+
     return res.json(book);
   }
 

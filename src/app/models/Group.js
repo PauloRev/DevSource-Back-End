@@ -13,10 +13,6 @@ const GroupSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  area: {
-    type: String,
-    required: true
-  },
   url: {
     type: String,
     required: true

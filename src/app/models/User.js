@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    unique: true,
     required: true
   },
   email: {
@@ -14,8 +13,7 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
-    select: false
+    required: true
   },
   avatar: {
     type: String
@@ -28,6 +26,7 @@ const UserSchema = new mongoose.Schema({
   },
   githubUsername: {
     type: String,
+    unique: true,
     required: true
   },
   githubUrl: {
@@ -46,30 +45,10 @@ UserSchema.pre("save", async function(next) {
   }
   this.password = await bcrypt.hash(this.password, 8);
   return next();
-  // bcrypt.genSalt((err, salt) => {
-  //   bcrypt.hash(this.password, salt, (err, hash) => {
-  //     this.password = hash;
-  //     return next();
-  //   });
-  // });
 });
 
 UserSchema.methods.checkPassword = async function(password) {
   return await bcrypt.compare(password, this.password);
-
-  // try {
-  //   // return new Promise((resolve, reject) => {
-  //   //   bcrypt.compare(password, this.password, (err, isMatch) => {
-  //   //     if (err) {
-  //   //       return reject(err);
-  //   //     } else {
-  //   //       return resolve(isMatch);
-  //   //     }
-  //   //   });
-  //   // });
-  // } catch ({ response }) {
-  //   console.log(response);
-  // }
 };
 
 module.exports = mongoose.model("User", UserSchema);

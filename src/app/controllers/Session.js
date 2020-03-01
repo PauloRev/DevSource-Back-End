@@ -19,13 +19,17 @@ class SessionController {
     }
 
     try {
-      const { id, name, email } = userDb;
+      const { id, name, githubUsername, email } = userDb;
 
       return res.json({
         success: true,
-        token: jwt.sign({ id, name, email }, authConfig.secret, {
-          expiresIn: authConfig.expiresIn
-        })
+        token: jwt.sign(
+          { id, name, githubUsername, email },
+          authConfig.secret,
+          {
+            expiresIn: authConfig.expiresIn
+          }
+        )
       });
     } catch (err) {
       console.log(err, " ERRO");

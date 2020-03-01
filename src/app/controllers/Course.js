@@ -6,6 +6,12 @@ class CourseController {
     return res.json(courses);
   }
 
+  async show(req, res) {
+    const course = await Course.findById(req.params.id);
+
+    return res.status(200).json(course);
+  }
+
   async store(req, res) {
     const { id, name, email } = req.userSession;
 
@@ -14,6 +20,9 @@ class CourseController {
       author: id,
       authorName: name
     });
+
+    req.io.emit("course", course);
+
     return res.json(course);
   }
 
@@ -35,7 +44,7 @@ class CourseController {
 
     return res.json({
       success: true,
-      book
+      course
     });
   }
 

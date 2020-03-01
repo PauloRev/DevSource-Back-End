@@ -12,22 +12,31 @@ class UserController {
 
   async show(req, res) {
     const user = await User.findById(req.params.id);
-    const { name, email, biography, avatar, siteBlog, github } = user;
-
-    return res.json({
+    const {
       name,
+      githubUsername,
       email,
       biography,
       avatar,
       siteBlog,
-      github
+      githubUrl
+    } = user;
+
+    return res.json({
+      name,
+      githubUsername,
+      email,
+      biography,
+      avatar,
+      siteBlog,
+      githubUrl
     });
   }
 
   async store(req, res) {
     const { name, githubUsername, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !githubUsername || !email || !password) {
       return res.status(400).json({
         code: 400,
         error: "Verifique os campos obrigatórios!"
@@ -53,27 +62,27 @@ class UserController {
         `https://api.github.com/users/${githubUsername}`
       );
 
-      const githubProperties = {
-        biography: githubResponse.data.bio || "",
-        avatar: req.body.avatar || githubResponse.data.avatar_url,
-        siteBlog: githubResponse.data.blog || "",
-        githubUrl: githubResponse.data.html_url
-      };
+      if (githubResponse.status === 200) {
+        const githubProperties = {
+          biography: githubResponse.data.bio || "",
+          avatar: req.body.avatar || githubResponse.data.avatar_url,
+          siteBlog: githubResponse.data.blog || "",
+          githubUrl: githubResponse.data.html_url
+        };
 
-      const user = await User.create({
-        name,
-        email,
-        password,
-        githubUsername,
-        ...githubProperties
-      });
+        const user = await User.create({
+          name,
+          email,
+          password,
+          githubUsername,
+          ...githubProperties
+        });
 
-      user.password = undefined;
-
-      return res.status(200).json({
-        code: 200,
-        user
-      });
+        return res.status(200).json({
+          code: 200,
+          user
+        });
+      }
     } catch (err) {
       return res.status(400).json({
         code: 400,

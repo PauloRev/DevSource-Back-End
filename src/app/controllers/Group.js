@@ -14,6 +14,9 @@ class GroupController {
       author: id,
       authorName: name
     });
+
+    req.io.emit("group", group);
+
     return res.json(group);
   }
 

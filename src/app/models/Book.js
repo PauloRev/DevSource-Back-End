@@ -13,10 +13,6 @@ const BookSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  area: {
-    type: String,
-    required: true
-  },
   url: {
     type: String,
     required: true
@@ -28,6 +24,10 @@ const BookSchema = new mongoose.Schema({
   authorName: {
     type: String,
     required: true
+  },
+  likes: {
+    type: Number,
+    default: 0
   },
   createdAt: {
     type: Date,

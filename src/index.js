@@ -10,6 +10,15 @@ const databaseConfig = require("./config/database");
 const app = express();
 const port = process.env.PORT;
 
+const server = require("http").Server(app);
+const io = require("socket.io")(server);
+
+app.use((req, res, next) => {
+  req.io = io;
+
+  return next();
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(routes);
@@ -21,7 +30,7 @@ mongoose
     useUnifiedTopology: true
   })
   .then(() => {
-    app.listen(port, () => console.log(`server start in port ${port}`));
+    server.listen(port, () => console.log(`server start in port ${port}`));
   })
   .catch(err => {
     if (err) {
